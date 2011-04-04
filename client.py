@@ -2,19 +2,23 @@ import fuse, xmlrpclib, pickle, optparse, sys, pythonfs
 
 fuse.fuse_python_api = (0, 2)
 
-class PythonFS(fuse.Fuse):
-  def __init__(self, proxy, options, volumnes, *args, **kwargs):
-    fuse.Fuse.__init__(self, *args, **kwargs)
-    self.proxy = proxy    
-    
+proxy = xmlrpclib.ServerProxy('http://localhost:7388', allow_none=True)
+
+class PythonFS(fuse.Fuse):  
   def __getattr__(self, name):
     if name in dir(pythonfs.PythonFS):
-      func = getattr(self.proxy, name)
+      func = getattr(proxy, name)
       return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
     else:
       return getattr(self, name)
-
-proxy = xmlrpclib.ServerProxy('http://localhost:7388', allow_none=True)
+      
+class PythonFile(object):
+  def __getattr_(self, name):
+    if name in dir(pythonfs.PythonFS.PythonFile):
+      func = getattr(proxy, name)
+      return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
+    else:
+      return getattr(self, name)
 
 from optparse import OptionParser
 parser = OptionParser()
@@ -24,6 +28,7 @@ options, args = parser.parse_args()
 
 sys.argv = [sys.argv[0], options.mount_point, '-f']
 
-fs = PythonFS(proxy, options, args, version=fuse.__version__, dash_s_do='setsingle')
+fs = PythonFS(options, args, version=fuse.__version__, dash_s_do='setsingle')
 fs.parse(errex=1)
+fs.file_class = PythonFile
 fs.main()

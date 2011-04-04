@@ -15,7 +15,7 @@ class PythonFS:
     return [fuse.Direntry(e) for e in os.listdir('.' + path)]
 
   def unlink(self, path):
-    os.unlnk('.' + path)
+    os.unlink('.' + path)
   
   def rmdir(self, path):
     os.rmdir('.' + path)
@@ -59,7 +59,7 @@ class PythonFS:
   class PythonFile:
     
     def __init__(self, path, flags, *mode):
-      self.file = os.fdopen(os.open('.' + path, flags, *mode), None)
+      self.file = os.fdopen(os.open('.' + path, flags, *mode))
       self.fd = self.file.fileno()
       
     def read(self, length, offset):
