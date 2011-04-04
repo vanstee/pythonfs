@@ -1,13 +1,13 @@
-import xmlrpclib, pickle
+import  fuse, xmlrpclib, pickle
 
-class FakeFS(object):
-  def __init__(self, proxy):
-    self.proxy = proxy
+class PythonFS(fuse.Fuse):
+  def __init__(self, *args, **kwargs):
+    fuse.Fuse.__init__(self, *args, **kwargs)
+    self.proxy = proxy    
     
   def __getattr__(self, method):
     func = getattr(self.proxy, method)
     return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
 
 proxy = xmlrpclib.ServerProxy('http://localhost:7388', allow_none=True)
-fs = FakeFS(proxy)
-print fs.readddir('', 0)
+fs = PythonFS(proxy, usage='')
