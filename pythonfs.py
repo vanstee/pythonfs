@@ -61,7 +61,7 @@ class PythonFile:
   def _dispatch(self, method, args):
     return pickle.dumps(getattr(self, method)(*args))  
   
-  def __init__(self, path, flags, *mode):
+  def init(self, path, flags, *mode):
     self.file = os.fdopen(os.open('.' + path, flags, *mode))
     self.fd = self.file.fileno()
     

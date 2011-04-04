@@ -18,6 +18,9 @@ class PythonFile(object):
     if name in dir(pythonfs.PythonFile):
       func = getattr(fileproxy, name)
       return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
+    elif name == '__init__':
+      func = getattr(fileproxy, 'init')
+      return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))      
     else:
       return getattr(self, name)
 
