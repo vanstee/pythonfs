@@ -2,20 +2,21 @@ import fuse, xmlrpclib, pickle, optparse, sys, pythonfs
 
 fuse.fuse_python_api = (0, 2)
 
-proxy = xmlrpclib.ServerProxy('http://localhost:7388', allow_none=True)
+fsproxy   = xmlrpclib.ServerProxy('http://localhost:7388', allow_none=True)
+fileproxy = xmlrpclib.ServerProxy('http://localhost:7389', allow_none=True)
 
 class PythonFS(fuse.Fuse):  
   def __getattr__(self, name):
     if name in dir(pythonfs.PythonFS):
-      func = getattr(proxy, name)
+      func = getattr(fsproxy, name)
       return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
     else:
       return getattr(self, name)
       
 class PythonFile(object):
-  def __getattr_(self, name):
-    if name in dir(pythonfs.PythonFS.PythonFile):
-      func = getattr(proxy, name)
+  def __getattr__(self, name):
+    if name in dir(pythonfs.PythonFile):
+      func = getattr(fileproxy, name)
       return lambda *args, **kwargs: pickle.loads(func(*args, **kwargs))
     else:
       return getattr(self, name)
@@ -28,7 +29,7 @@ options, args = parser.parse_args()
 
 sys.argv = [sys.argv[0], options.mount_point, '-f']
 
-fs = PythonFS(options, args, version=fuse.__version__, dash_s_do='setsingle')
+fs = PythonFS(version=fuse.__version__, dash_s_do='setsingle')
 fs.parse(errex=1)
 fs.file_class = PythonFile
 fs.main()
