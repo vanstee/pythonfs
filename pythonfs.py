@@ -57,12 +57,12 @@ class PythonFS:
     return os.statvfs('.')
     
   def open(self, path, flags):
-    fd = os.open('.' + path, flags)
-    fd.close()
+    f = os.fdopen(os.open('.' + path, flags))
+    f.close()
       
   def create(self, path, flags, mode):
-    fd = os.open('.' + path, flags, mode)
-    fd.close()
+    f = os.fdopen(os.open('.' + path, flags, mode))
+    f.close()
 
   def read(self, path, length, offset, fh=None):
     f = os.fdopen(os.open('.' + path, os.O_RDONLY))
