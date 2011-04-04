@@ -86,15 +86,15 @@ class PythonFS:
     f.truncate(length)
 
   def flush(self, path, fh=None):
-    f = os.fdopen(os.open('.' + path))    
+    f = os.fdopen(os.open('.' + path, os.O_RDONLY))    
     f.flush()
     
   def release(self, path, fh=None):
-    f = os.fdopen(os.open('.' + path))    
+    f = os.fdopen(os.open('.' + path, os.O_RDONLY))    
     f.flush()
         
   def fsync(self, fdatasync, fh=None):
-    f = os.fdopen(os.open('.' + path))
+    f = os.fdopen(os.open('.' + path, os.O_RDONLY))
     fd = f.fileno()
     if fsyncfile and hasattr(os, 'fdatasync'):
       os.fdatasync(fd)
