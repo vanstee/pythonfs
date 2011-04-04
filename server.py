@@ -14,18 +14,17 @@ class Server(threading.Thread):
     self.server.shutdown()
       
 
-pythonfs = SimpleXMLRPCServer.SimpleXMLRPCServer(('localhost', 7388))
-pythonfs.register_instance(pythonfs.PythonFS())
-fsserver = Server(pythonfs)
-fsserver.start()
+fsserver = SimpleXMLRPCServer.SimpleXMLRPCServer(('localhost', 7388))
+fsserver.register_instance(pythonfs.PythonFS())
+fsthread = Server(fsserver)
 
-pythonfile = SimpleXMLRPCServer.SimpleXMLRPCServer(('localhost', 7389))
-pythonfile.register_instance(pythonfs.PythonFile())
-fileserver = Server(pythonfile)
+fileserver = SimpleXMLRPCServer.SimpleXMLRPCServer(('localhost', 7389))
+fileserver.register_instance(pythonfs.PythonFile())
+filthread = Server(fileserver)
 
 try:
-  fsserver.start()
-  fileserver.start()
+  fsthread.start()
+  filethread.start()
 except KeyboardInterrupt:
-  fsserver.shutdown()
-  fileserver.shutdown()
+  fsthread.shutdown()
+  filethread.shutdown()
