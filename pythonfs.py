@@ -63,26 +63,26 @@ class PythonFS:
     os.fdopen(os.open('.' + path, flags, mode))
 
   def read(self, path, length, offset, fh=None):
-    f = os.fdopen(os.open('.' + path, flags, 'r'))
+    f = os.fdopen(os.open('.' + path, 'r'))
     f.seek(offset)
     data = f.read(length)
     f.close()
     return data
     
   def write(self, path, buffer, offset, fh=None):
-    f = os.fdopen(os.open('.' + path, flags, 'w'))
+    f = os.fdopen(os.open('.' + path, 'w'))
     f.seek(offset)
     f.write(buffer)
     f.close()
     return len(buffer)
     
   def fgetattr(self, path, fh=None):
-    f = os.fdopen(os.open('.' + path, flags, 'r'))    
+    f = os.fdopen(os.open('.' + path, 'r'))    
     fd = f.fileno()
     return os.fstat(fd)
     
   def ftruncate(self, path, length, fh=None):
-    f = os.fdopen(os.open('.' + path, flags, 'r'))
+    f = os.fdopen(os.open('.' + path, 'r'))
     f.truncate(length)
 
   def flush(self, path, fh=None):
