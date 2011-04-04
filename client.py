@@ -22,4 +22,5 @@ sys.argv = [sys.argv[0], options.mount_point, '-f']
 
 fs = PythonFS(version=fuse.__version__, dash_s_do='setsingle')
 fs.parse(errex=1)
+fs.file_class = PythonFile
 fs.main()

@@ -57,10 +57,12 @@ class PythonFS:
     return os.statvfs('.')
     
   def open(self, path, flags):
-    os.fdopen(os.open('.' + path, flags))
+    fd = os.open('.' + path, flags)
+    fd.close()
       
   def create(self, path, flags, mode):
-    os.fdopen(os.open('.' + path, flags, mode))
+    fd = os.open('.' + path, flags, mode)
+    fd.close()
 
   def read(self, path, length, offset, fh=None):
     f = os.fdopen(os.open('.' + path, os.O_RDONLY))
@@ -77,13 +79,15 @@ class PythonFS:
     return len(buffer)
     
   def fgetattr(self, path, fh=None):
-    f = os.fdopen(os.open('.' + path, os.O_RDONLY))    
-    fd = f.fileno()
-    return os.fstat(fd)
+    f = os.fdopen(os.open('.' + path, os.O_RDONLY))
+    attrs = os.fstat(f.fileno())
+    f.close()
+    return attrs
     
   def ftruncate(self, path, length, fh=None):
     f = os.fdopen(os.open('.' + path, os.O_RDONLY))
     f.truncate(length)
+    f.close()
 
   def flush(self, path, fh=None):
     f = os.fdopen(os.open('.' + path, os.O_RDONLY))    
@@ -94,9 +98,9 @@ class PythonFS:
     f.flush()
         
   def fsync(self, fdatasync, fh=None):
-    f = os.fdopen(os.open('.' + path, os.O_RDONLY))
-    fd = f.fileno()
+    f = os.fdopen(os.open('.' + path, os.O_RDONLY))    
+    f.flush()
     if fsyncfile and hasattr(os, 'fdatasync'):
-      os.fdatasync(fd)
+      os.fdatasync(f.fileno())
     else:
-      os.fsync(fd)
+      os.fsync(f.fileno())
