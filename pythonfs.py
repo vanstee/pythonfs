@@ -21,7 +21,7 @@ class PythonFS:
     os.rmdir('.' + path)
   
   def symlink(self, path, link):
-    os.symlink(path, '.' + path)
+    os.symlink(path, '.' + link)
   
   def rename(self, path, name):
     os.rename('.' + path, '.' + name)
@@ -55,45 +55,48 @@ class PythonFS:
     
   def statfs(self):
     return os.statvfs('.')
-  
-class PythonFile:
-  
-  def _dispatch(self, method, args):
-    return pickle.dumps(getattr(self, method)(*args))  
-  
-  def init(self, path, flags, *mode):
-    self.file = os.fdopen(os.open('.' + path, flags, *mode))
-    self.fd = self.file.fileno()
     
-  def read(self, length, offset):
-    self.file.seek(offset)
-    return self.file.read(length)
+  def open(self, path, flags):
+    return os.fdopen(os.open('.' + path, flags))
+      
+  def create(self, path, flags, mode):
+    return os.fdopen(os.open('.' + path, flags, mode))
+
+  def read(self, path, length, offset, fh=None):
+    f = os.fdopen(os.open('.' + path, flags, 'r'))
+    f.seek(offset)
+    data = f.read(length)
+    f.close()
+    return data
     
-  def write(self, buffer, offset):
-    self.file.seek(offset)
-    self.file.write(buffer)
+  def write(self, path, buffer, offset, fh=None):
+    f = os.fdopen(os.open('.' + path, flags, 'w'))
+    f.seek(offset)
+    f.write(buffer)
+    f.close()
     return len(buffer)
     
-  def release(self, flags):
-    self.file.close()
+  def fgetattr(self, path, fh=None):
+    f = os.fdopen(os.open('.' + path, flags, 'r'))    
+    fd = f.fileno()
+    return os.fstat(fd)
     
-  def _fflush(self):
-    if 'w' in self.file.mode or 'a' in self.file.mode:
-      self.file.flush()
-      
-  def fsync(self, isfsyncfile):
-    self._fflush()
-    if isfsyncfile and hasattr(os, 'fdatasync'):
-      os.fdatasync(self.fd)
+  def ftruncate(self, path, length, fh=None):
+    f = os.fdopen(os.open('.' + path, flags, 'r'))
+    f.truncate(length)
+
+  def flush(self, path, fh=None):
+    f = os.fdopen(os.open('.' + path))    
+    f.flush()
+    
+  def release(self, path, fh=None):
+    f = os.fdopen(os.open('.' + path))    
+    f.flush()
+        
+  def fsync(self, fdatasync, fh=None):
+    f = os.fdopen(os.open('.' + path))
+    fd = f.fileno()
+    if fsyncfile and hasattr(os, 'fdatasync'):
+      os.fdatasync(fd)
     else:
-      os.fsync(self.fd)
-      
-  def flush(self):
-    self._fflush()
-    os.close(os.dup(self.fd))
-  
-  def fgetattr(self):
-    return os.fstat(self.fd)
-    
-  def ftruncate(self, length):
-    self.file.truncate(length)
+      os.fsync(fd)
