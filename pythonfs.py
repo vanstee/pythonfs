@@ -60,8 +60,8 @@ class PythonFS:
   class PythonFile:
     
     def __init__(self, path, flags, *mode):
-      self.file = os.fdopen(os.open('.' + path, flags, *mode)), None)
-      self.fd   = self.file.fileno()
+      self.file = os.fdopen(os.open('.' + path, flags, *mode), None)
+      self.fd = self.file.fileno()
       
     def read(self, length, offset):
       self.file.seek(offset)
