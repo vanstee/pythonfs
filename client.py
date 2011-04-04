@@ -1,5 +1,7 @@
 import  fuse, xmlrpclib, pickle
 
+fuse.fuse_python_api = (0, 2)
+
 class PythonFS(fuse.Fuse):
   def __init__(self, *args, **kwargs):
     fuse.Fuse.__init__(self, *args, **kwargs)
