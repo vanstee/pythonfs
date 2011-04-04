@@ -13,7 +13,6 @@ class PythonFS:
   
   def readdir(self, path, offset):
     return [fuse.Direntry(e) for e in os.listdir('.' + path)]
-    # return [e for e in os.listdir('.' + path)]
 
   def unlink(self, path):
     os.unlnk('.' + path)
