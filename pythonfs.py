@@ -95,6 +95,3 @@ class PythonFS:
       
     def ftruncate(self, length):
       self.file.truncate(length)
-      
-    def lock(self, cmd, owner, **kw):
-      # todo
