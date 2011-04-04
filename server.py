@@ -20,7 +20,7 @@ fsthread = Server(fsserver)
 
 fileserver = SimpleXMLRPCServer.SimpleXMLRPCServer(('localhost', 7389))
 fileserver.register_instance(pythonfs.PythonFile())
-filthread = Server(fileserver)
+filethread = Server(fileserver)
 
 try:
   fsthread.start()
