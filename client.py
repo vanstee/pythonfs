@@ -3,8 +3,8 @@ import pythonfs
 
 fuse.fuse_python_api = (0, 2)
 
-host = sys.argv[-1:]
-sys.argv[:-1]
+host = sys.argv[-1]
+sys.argv = sys.argv[:-1]
 proxy = xmlrpclib.ServerProxy('http://' + host, allow_none=True)
 
 class PythonFS(fuse.Fuse):  
